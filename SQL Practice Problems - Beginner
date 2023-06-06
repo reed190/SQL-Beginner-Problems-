@@ -1,0 +1,133 @@
+--1.  Return all the fields from all the shippers 
+USE Northwind_SPP;
+SELECT * FROM shippers;
+
+--2.  Return CategoryName and Description Columns from Categories table 
+--CateogryName and Description are 
+SELECT CategoryName, Description
+FROM Categories; 
+
+--3.  Return Firstname, LastName, and HireDate of all employees with the title of Sales REpresentative 
+SELECT * FROM Employees;
+
+SELECT FirstName, LastName, HireDate 
+FROM Employees 
+WHERE Title = 'Sales Representative'; 
+
+--4.  Same as above, but only select those employees who are sales representatives in the United States
+SELECT FirstName, LastName, HireDate 
+FROM Employees 
+WHERE Title = 'Sales Representative' AND Country = 'USA'; 
+
+--5. Show all orders placed by Steven Buchanan (EmployeeID = 5) 
+SELECT * FROM Orders;
+
+Select OrderID, OrderDate 
+FROM Orders
+WHERE EmployeeID = 5;
+
+--6. In the suppliers table, show the SupplierID, ContactName, and Contact Title for those Supppliers whose 
+--ContactTitle is not Marketing Manager 
+Select * FROM Suppliers;
+
+SELECT SupplierID, ContactName, ContactTitle
+FROM Suppliers 
+WHERE ContactTitle != 'Marketing Manager';
+
+--7. In the product table, show ProductID and ProductName for those products where the ProductName includes the string queso
+--Use  -    Like '%what string is like%'
+SELECT * FROM Products;
+
+SELECT ProductID, ProductName
+FROM Products
+WHERE  ProductName LIKE '%Queso%'; 
+
+--8. Use the Orders table to show OrderID, CustomerID, and ShipCountry for orders where ship country 
+--is either France or Belgium 
+SELECT OrderID, CustomerID, ShipCountry
+FROM Orders 
+WHERE ShipCountry = 'France' OR ShipCountry= 'Belgium';
+
+--9. Return Orders from order table for any Latin American Country 
+SELECT OrderID, CustomerID, ShipCountry
+FROM Orders 
+WHERE ShipCountry in ('Brazil', 'Mexico','Argentina', 'Venezuela');
+
+--10. In the employees table, show FirstName, LastName, Title, and BirthDate.  
+--Order results by Birthdate so oldest employees is first 
+SELECT FirstName, LastName, Title, BirthDate
+From Employees
+ORDER BY BirthDate ASC;
+
+--11. Same as above, but show date portion of BirthDate Field 
+--23 is format type YYYY-MM-dd in SQL 
+
+SELECT FirstName, LastName, Title,
+	   CONVERT(VARCHAR, BirthDate, 23)
+         AS DateOnlyBirthDate
+FROM Employees
+ORDER BY DateOnlyBirthDate ASC;
+
+--12. Combine employees name to obtain full name 
+SELECT FirstName, LastName, 
+CONCAT(FirstName , ' ', LastName) as FullName from Employees;
+
+--13. In the OrderDetails table, find the total price by multiplying the UnitPrice and Quantity Field together
+--Create a new column Total Price with this value
+
+SELECT OrderID, ProductID, UnitPrice, Quantity, Quantity * UnitPrice AS TotalPrice 
+FROM OrderDetails;
+
+--14. Count the number of customers in the customer table 
+SELECT * FROM Customers;
+
+SELECT 
+    COUNT(*) as TotalCustomers
+FROM 
+	Customers;
+
+--15.  Show the date of the first order ever made in the orders table
+SELECT min(OrderDate) as FirstOrder
+FROM Orders;
+
+--16.  Show a list of countries where Northwind Company has customers 
+SELECT 
+	Country
+FROM 
+	Customers
+Group by Country;
+
+--17. Show a list of different values in Customers table for contact titles and include a count 
+--for each contact title
+SELECT 
+	ContactTitle, COUNT(ContactTitle) as TotalContactTitle
+FROM 
+	Customers 
+Group by ContactTitle
+Order by TotalContactTitle DESC;
+
+--18. Join the suppliers table to the Products table by the SupplierID.  Show the ProductID, ProductName, and CompanyName 
+--of the supplier 
+
+SELECT * FROM Suppliers;
+SELECT * FROM Products;
+
+
+SELECT Products.ProductID, Products.ProductName, Supplier = CompanyName
+FROM Suppliers
+INNER JOIN Products ON Suppliers.SupplierID=Products.ProductID
+
+--19.  Show a list of Orders that were made, including the shipper that was used.  Show 
+--OrderID, OrderDate, and CompanyName of the Shipper and sort by OrderID.  Show orders less 
+--than 10270
+
+SELECT * FROM Orders;
+SELECT * FROM Shippers;
+
+SELECT 
+	OrderID, CONVERT(VARCHAR, OrderDate, 23) AS OrderDate, Shipper = CompanyName 
+FROM 
+	Orders
+INNER JOIN Shippers ON Shippers.ShipperID = Orders.ShipVia 
+WHERE OrderID < 10270
+Order by OrderID ASC; 
